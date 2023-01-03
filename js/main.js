@@ -1,3 +1,4 @@
+import * as tests from './tests.js'
 //cache DOM objects
 const view = {
   playerGrid: document.querySelector('#playerGrid'),
@@ -78,8 +79,7 @@ class CarrotPlot {
     this.row = NaN
     this.column = NaN
     this.isVertical = true
-    this.index = CarrotPlot._plotCount
-    CarrotPlot._plotCount++
+    this.index = game.carrotPlots.length
 
     this.element = document.createElement('div')
     this.element.className = 'carrotPlot vertical'
@@ -157,7 +157,7 @@ const render = () => {
     view.playButton.classList.remove('hidden')
   } else {
     plotsToPlace.forEach((plotElement) => {
-      plot = game.carrotPlots[plotElement.id.split('_')[1]]
+      const plot = game.carrotPlots[plotElement.id.split('_')[1]]
       if (plot.row && plot.column) {
         plotTray.removeChild(plot.element)
         view.playerGrid.appendChild(plot.element)
@@ -208,4 +208,25 @@ const initialize = () => {
   render()
 }
 
+const reset = () => {
+  view.playerGrid.textContent = ""
+  view.gopherGrid.textContent = ""
+  view.plotTray.textContent = ""
+  view.playButton.classList.remove("visible")
+  view.playButton.classList.add("hidden")
+  initialize()
+}
+
 initialize()
+
+tests.rotateOOBHorizontal(game, render)
+reset()
+tests.rotateOOBVertical(game, render)
+reset()
+tests.placementOOBVertical(game, render)
+reset()
+tests.placementOOBHorizontal(game, render)
+reset()
+tests.placementOverlappingVertical(game, render)
+reset()
+tests.placementOverlappingHorizontal(game, render)
