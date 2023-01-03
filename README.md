@@ -12,16 +12,17 @@ the MVP UI features two grids which will display where the user and the AI have 
 
 When the game ends on of two end game displays will overlay the game screen congratulating or consoling the player, along with a matching image of the titular gopher.  
 
-![MVP wireframe](GopherWarsMVP.png)  
+![MVP wireframe](readmeImages/GopherWarsMVP.png)  
 
 version two encorporates more animations. Notably, the carrot plot tool tray disappears after the game starts. That space in the UI is replaced with a tray of special abilities. This version also introduces a walkthrough animation that highlights the user controls and explains their effects. The win screen and loss screen remain unchanged from the MVP  
 
-![Version 2 wireframe](GopherWarsV2.png)  
+![Version 2 wireframe](readmeImages/GopherWarsV2.png)  
 
 
 Version 3 adds in a great deal of player progression. A skill tree is available from the win/loss screens which allows the player to spend points earned in games to unlock abilities in the categories of attacks, defence, and intelligence
 
-![Version 3 wireframe](GopherWarsV3.png)
+![Version 3 wireframe](readmeImages/GopherWarsV3.png)  
+
 # User Stories  
 
 ### MVP  
