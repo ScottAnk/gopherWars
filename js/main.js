@@ -14,6 +14,16 @@ class Game {
     this.playerSquares = []
     this.gopherSquares = []
     this.carrotPlots = []
+    this.selectedPlot = null
+  }
+
+  static _createIndexList(row, column, size, vertical) {
+    const indexes = []
+    const increment = vertical ? 10 : 1
+    for (let i = 0; i < size; i++) {
+      indexes[i] = (row-1) * 10 + (column-1) + increment * i
+    }
+    return indexes
   }
 
   addCarrotPlot(carrotPlot) {
@@ -26,6 +36,39 @@ class Game {
 
   addGopherSquare(gopherSquare) {
     this.gopherSquares[gopherSquare.index] = gopherSquare
+  }
+
+  selectPlot(plotId) {
+    this.selectedPlot = this.carrotPlots[plotId.split('_')[1]]
+  }
+
+  movePlot(squareId) {
+    const targetSquare = this.playerSquares[squareId.split('_')[1]]
+    this.selectedPlot.setLocation(targetSquare.row, targetSquare.column)
+    this.selectedPlot = null
+  }
+
+  checkForCollision(row, column, size, vertical, exempt = null) {
+    const checkLocations = Game._createIndexList(row, column, size, vertical)
+    for (let i = 0; i < this.carrotPlots.length; i++) {
+      const plot = this.carrotPlots[i]
+      if (plot === exempt) {
+        continue
+      }
+      const plotIndexes = Game._createIndexList(
+        plot.row,
+        plot.column,
+        plot.size,
+        plot.isVertical
+      )
+      for (let j = 0; j < plotIndexes.length; j++) {
+        if (checkLocations.includes(plotIndexes[j])){
+          return true
+        }
+      }                            
+
+        
+    }
   }
 }
 
@@ -52,11 +95,32 @@ class CarrotPlot {
   static _plotCount = 0
 
   rotate() {
-    //TODO
+    this.isVertical = !this.isVertical
+    if (!this.setLocation(this.row, this.column)){
+      this.isVertical = !this.isVertical
+    }
   }
 
   setLocation(row, column) {
-    //TODO
+    let newRow = row
+    let newColumn = column
+    if (this.isVertical) {
+      const maxDimension = newRow + this.size - 1
+      if (maxDimension > 10) {
+        newRow -= maxDimension - 10
+      }
+    } else {
+      const maxDimension = newColumn + this.size - 1
+      if (maxDimension > 10) {
+        newColumn -= maxDimension - 10
+      }
+    }
+    if (!game.checkForCollision(newRow, newColumn, this.size, this.isVertical, this)) {
+      this.row = newRow
+      this.column = newColumn
+      return true
+    }
+    return false
   }
 }
 
@@ -86,12 +150,12 @@ class GopherSquare extends TargetSquare {
   }
 }
 
-render = () => {
-  if (view.plotTray.childElementCount === 1) {
+const render = () => {
+  const plotsToPlace = Array.from(plotTray.querySelectorAll('.carrotPlot'))
+  if (plotsToPlace.length === 0) {
     view.playButton.classList.add('visible')
     view.playButton.classList.remove('hidden')
   } else {
-    const plotsToPlace = Array.from(plotTray.querySelectorAll('.carrotPlot'))
     plotsToPlace.forEach((plotElement) => {
       plot = game.carrotPlots[plotElement.id.split('_')[1]]
       if (plot.row && plot.column) {
@@ -100,6 +164,7 @@ render = () => {
       }
     })
   }
+
   game.carrotPlots.forEach((plot) => {
     if (!plot.row) {
       return
@@ -115,8 +180,7 @@ render = () => {
       plot.element.classList.add('horizontal')
       plot.element.classList.remove('vertical')
       plot.element.style.gridRowEnd = `span 1`
-      plot.element.style.gridColumnEnd = 'span ${plot.size}'
-
+      plot.element.style.gridColumnEnd = `span ${plot.size}`
     }
   })
 }
