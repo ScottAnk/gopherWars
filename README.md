@@ -31,11 +31,11 @@ Version 3 adds in a great deal of player progression. A skill tree is available 
     ```
     in html:
     div with id 'playerGrid'
-        100x divs with class 'carrotVertex'
+        100x divs with class 'playerSquare gridSquare'
         each div also gets attributes data-column and data-row which will assist with placing carrot plots
         and gopher hit marks
     div with id 'gopherGrid'
-        100x divs with class 'gopherVertex'
+        100x divs with class 'gopherSquare gridSquare'
         each div also gets attributes data-column and data-row which will assist with placing player hits
     
     in css:
@@ -47,7 +47,7 @@ Version 3 adds in a great deal of player progression. A skill tree is available 
     in html:
     div with id 'plotTray'
         divs with class 'carrotPlot vertical' 
-            divs with class 'individualCarrot'
+            divs with class 'carrotSquare gridSquare'
             each carrotPlot can have different numbers of individualCarrot
 
     in css:

@@ -1,0 +1,39 @@
+:root {
+    --gridBasis: 30px;
+}
+.boardGrid {
+    display: inline-grid;
+    box-sizing: border-box;
+    width: 50%;
+    margin: 5%;
+    padding: 0;
+    grid-template: repeat(10, var(--gridBasis))/repeat(10, var(--gridBasis));
+}
+.gridSquare {
+    width: var(--gridBasis);
+    height: var(--gridBasis);
+    border: 1px solid black
+}
+#plotTray{
+    display: flex;
+    justify-content: space-between;
+    border: 2px solid black;
+    padding: 10px;
+}
+.carrotPlot {
+    display: flex;
+    justify-content: flex-start;
+}
+.vertical {
+    flex-direction: column;
+}
+.horizontal {
+    flex-direction: row;
+}
+.carrotSquare {
+    background-color: orange;
+    box-sizing: border-box;
+}
+.hidden {
+    display: none;
+}
