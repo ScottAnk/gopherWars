@@ -14,6 +14,7 @@ export class CarrotPlot {
     for (let i = 0; i < size; i++) {
       const newCarrot = document.createElement('div')
       newCarrot.className = 'carrotSquare gridSquare'
+      newCarrot.id = `carrotSquare_${i}`
       this.element.appendChild(newCarrot)
     }
   }

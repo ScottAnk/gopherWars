@@ -13,7 +13,21 @@ const view = {
 let game = {}
 
 const clickPlot = function (event) {
-  game.selectPlot(this.id)
+  event.stopPropagation()
+  console.log('click body')
+  if (game.doubleClickFlag === this.id){
+    console.log('double click')
+    game.rotatePlot(this.id)
+  } else if (!game.selectedPlot || game.selectedPlot.index != this.id.split('_')[1]) {
+    game.selectPlot(this.id)
+    console.log('start a click timer')
+    game.startDoubleClickTimer(this.id)
+  } else {
+    const clickedPlot = game.carrotPlots[this.id.split('_')[1]]
+    const plotIndexes = Game._createIndexList(clickedPlot.row, clickedPlot.column, clickedPlot.size, clickedPlot.isVertical)
+    const offset = event.target.id.split('_')[1]
+    game.movePlot(`playerSquare_${plotIndexes[offset]}`)
+  }
   render()
 }
 
@@ -83,9 +97,10 @@ const initialize = () => {
   }
 
   playerGrid.addEventListener('click', (event) => {
-    if (game.selectedPlot) {
-      game.movePlot(event.target.id)
+    if (!game.selectedPlot) {
+      return
     }
+    game.movePlot(event.target.id)
     render()
   })
   render()
@@ -100,7 +115,7 @@ const reset = () => {
 
 initialize()
 
-if (true) {
+if (false) {
   tests.rotateOOBHorizontal(game, render)
   reset()
   tests.rotateOOBVertical(game, render)
