@@ -12,6 +12,11 @@ const view = {
 //state object
 let game = {}
 
+const clickPlot = function (event) {
+  game.selectPlot(this.id)
+  render()
+}
+
 const render = () => {
   const plotsToPlace = Array.from(plotTray.querySelectorAll('.carrotPlot'))
   if (plotsToPlace.length === 0) {
@@ -28,6 +33,7 @@ const render = () => {
   }
 
   game.carrotPlots.forEach((plot) => {
+    plot.element.classList.remove('selected')
     if (!plot.row) {
       return
     }
@@ -45,6 +51,10 @@ const render = () => {
       plot.element.style.gridColumnEnd = `span ${plot.size}`
     }
   })
+
+  if (game.selectedPlot) {
+    game.selectedPlot.element.classList.add('selected')
+  }
 }
 
 const initialize = () => {
@@ -52,10 +62,14 @@ const initialize = () => {
   for (let i = 0; i < 100; i++) {
     const playerSquare = new PlayerSquare(i)
     game.addPlayerSquare(playerSquare)
+    playerSquare.element.classList.add(`column${playerSquare.column}`)
+    playerSquare.element.classList.add(`row${playerSquare.row}`)
     view.playerGrid.appendChild(playerSquare.element)
 
     const gopherSquare = new GopherSquare(i)
     game.addGopherSquare(gopherSquare)
+    gopherSquare.element.classList.add(`column${gopherSquare.column}`)
+    gopherSquare.element.classList.add(`row${gopherSquare.row}`)
     view.gopherGrid.appendChild(gopherSquare.element)
   }
   game.addCarrotPlot(new CarrotPlot(2, game))
@@ -65,8 +79,15 @@ const initialize = () => {
   game.addCarrotPlot(new CarrotPlot(5, game))
   for (const plot of game.carrotPlots) {
     view.plotTray.appendChild(plot.element)
+    plot.element.addEventListener('click', clickPlot)
   }
 
+  playerGrid.addEventListener('click', (event) => {
+    if (game.selectedPlot) {
+      game.movePlot(event.target.id)
+    }
+    render()
+  })
   render()
 }
 
@@ -79,14 +100,24 @@ const reset = () => {
 
 initialize()
 
-tests.rotateOOBHorizontal(game, render)
-reset()
-tests.rotateOOBVertical(game, render)
-reset()
-tests.placementOOBVertical(game, render)
-reset()
-tests.placementOOBHorizontal(game, render)
-reset()
-tests.placementOverlappingVertical(game, render)
-reset()
-tests.placementOverlappingHorizontal(game, render)
+if (true) {
+  tests.rotateOOBHorizontal(game, render)
+  reset()
+  tests.rotateOOBVertical(game, render)
+  reset()
+  tests.placementOOBVertical(game, render)
+  reset()
+  tests.placementOOBHorizontal(game, render)
+  reset()
+  tests.placementOverlappingVertical(game, render)
+  reset()
+  tests.placementOverlappingHorizontal(game, render)
+  reset()
+  tests.clickToPlace(game, (event) => {
+    if (game.selectedPlot) {
+      game.movePlot(event.target.id)
+    }
+    render()
+  },render)
+  console.log('reminder: test click to place with object collision')
+}

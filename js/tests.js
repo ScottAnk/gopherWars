@@ -1,3 +1,6 @@
+function clickGridEvent(index) {
+  return {target:{id:`playerSquare_${index}`}}
+}
 export function placementOOBVertical(game, render) {
   //move the 5 piece plot to the bottom corner, forcing an adjustment to move up to row 6
   game.selectPlot('carrotPlot_4')
@@ -94,4 +97,16 @@ export function placementOverlappingHorizontal(game, render) {
     } - placementOverlappingHorizontal`
   )
   render()
+}
+
+export function clickToPlace(game, handler, render) {
+  game.selectPlot('carrotPlot_4')
+  handler(clickGridEvent(34))
+  console.log(
+    `${
+      game.carrotPlots[4].column === 5 && game.carrotPlots[4].row === 4
+      ? 'pass'
+      : '!!!fail with ' + game.carrotPlots[4].row + ', ' + game.carrotPlots[4].column
+    } - clickToPlace`
+  )
 }
