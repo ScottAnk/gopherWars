@@ -28,21 +28,22 @@ const clickPlot = function (event) {
   setupPhaseRender()
 }
 
-const render = () => {
-  const plotsToPlace = Array.from(plotTray.querySelectorAll('.carrotPlot'))
+const setupPhaseRender = () => {
+  let plotsToPlace = Array.from(plotTray.querySelectorAll('.carrotPlot'))
+  plotsToPlace.forEach((plotElement) => {
+    const plot = game.carrotPlots[plotElement.id.split('_')[1]]
+    if (plot.row && plot.column) {
+      plotTray.removeChild(plot.element)
+      view.playerGrid.appendChild(plot.element)
+    }
+  })
+  plotsToPlace = Array.from(plotTray.querySelectorAll('.carrotPlot'))
   if (plotsToPlace.length === 0) {
     view.playButton = document.createElement('button')
     view.playButton.textContent = 'Start Game'
-  } else {
-    plotsToPlace.forEach((plotElement) => {
-      const plot = game.carrotPlots[plotElement.id.split('_')[1]]
-      if (plot.row && plot.column) {
-        plotTray.removeChild(plot.element)
-        view.playerGrid.appendChild(plot.element)
-      }
-    })
-  }
-
+    view.plotTray.appendChild(view.playButton)
+  } 
+  //update plot locations and styles according to data
   game.carrotPlots.forEach((plot) => {
     plot.element.classList.remove('selected')
     if (!plot.row) {
@@ -112,7 +113,7 @@ const reset = () => {
 
 initialize()
 
-if (true) {
+if (false) {
   const gridClickHandler = (event) => {
     if (!game.selectedPlot) {
       return
