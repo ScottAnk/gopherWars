@@ -1,6 +1,9 @@
 import * as tests from './tests.js'
 import { CarrotPlot, PlayerSquare, GopherSquare } from './gamePieces.js'
 import { Game } from './gameState.js'
+
+const debugMode = false
+const runTests = false
 //cache DOM objects
 const view = {
   playerGrid: document.querySelector('#playerGrid'),
@@ -28,6 +31,29 @@ const clickPlot = function (event) {
   setupPhaseRender()
 }
 
+const anchorCarrotLocations = () => {
+  game.carrotPlots.forEach((plot) => {
+    plot.element.removeEventListener('click', clickPlot)
+  })
+}
+
+const gameplayRender = () => {
+  game.playerSquares.forEach( (square) => {
+    if (square.isMiss) { square.element.classList.add('gopherMiss') }
+    else if (square.isHit) {square.element.classList.add('gopherHit')}
+    //TODO would be a nice effect to style the whole plot differently if all squares have been hit
+  })
+  game.gopherSquares.forEach( (square) => {
+    if (square.isMiss) { square.element.classList.add('playerMiss') }
+    else if (square.isHit) {square.element.classList.add('playerHit')}
+  })
+  game.gopherDens.forEach( (den) => {
+    if (den.isDead) {
+
+    }
+  })
+}
+
 const setupPhaseRender = () => {
   let plotsToPlace = Array.from(plotTray.querySelectorAll('.carrotPlot'))
   plotsToPlace.forEach((plotElement) => {
@@ -37,12 +63,26 @@ const setupPhaseRender = () => {
       view.playerGrid.appendChild(plot.element)
     }
   })
+
+  //TODO BUG this generates a new start button every time it renders
   plotsToPlace = Array.from(plotTray.querySelectorAll('.carrotPlot'))
   if (plotsToPlace.length === 0) {
     view.playButton = document.createElement('button')
     view.playButton.textContent = 'Start Game'
     view.plotTray.appendChild(view.playButton)
+    view.plotTray.addEventListener('click', (event) => {
+      anchorCarrotLocations()
+      game.makeGopherDens([2,3,3,4,5])
+      view.plotTray.classList.add('hidden')
+      if (debugMode) {window.showDens()}
+      view.gopherGrid.addEventListener('click', (event) => {
+        //TODO BUG a user click and drag will trigger the click event, but it errors out, which probably costs the user a turn 
+        game.registerPlayerShot(event.target.id)
+        gameplayRender()
+      })
+    })
   } 
+
   //update plot locations and styles according to data
   game.carrotPlots.forEach((plot) => {
     plot.element.classList.remove('selected')
@@ -84,6 +124,8 @@ const initialize = () => {
     gopherSquare.element.classList.add(`row${gopherSquare.row}`)
     view.gopherGrid.appendChild(gopherSquare.element)
   }
+  //TODO these carrotplot declarations should really be handled inside the game object
+  //  Taking an array like pickGopherPlots will allow flexability for changing boat types
   game.addCarrotPlot(new CarrotPlot(2, game))
   game.addCarrotPlot(new CarrotPlot(3, game))
   game.addCarrotPlot(new CarrotPlot(3, game))
@@ -108,12 +150,14 @@ const reset = () => {
   view.playerGrid.textContent = ''
   view.gopherGrid.textContent = ''
   view.plotTray.textContent = ''
+  view.plotTray.classList.remove('hidden')
   initialize()
 }
 
 initialize()
 
-if (true) {
+if (runTests) {
+  //test code
   const gridClickHandler = (event) => {
     if (!game.selectedPlot) {
       return
@@ -147,4 +191,31 @@ if (true) {
   tests.doubleClickToRotateCollision(game, gridClickHandler, clickPlot)
   reset()
   tests.placeAllPlots(game, gridClickHandler, clickPlot)
+}
+if (debugMode) {
+  //debugging features
+  window.game = game
+  window.reset = reset
+  window.setupPhaseRender = setupPhaseRender
+  window.showDens = () => {
+    game.gopherDens.forEach((den) => {
+      const squaresToMark = game.constructor._createIndexList(
+        den.row,
+        den.column,
+        den.size,
+        den.isVertical
+      )
+      squaresToMark.forEach((squareIndex) => {
+        game.gopherSquares[squareIndex].element.classList.add('debug')
+      })
+    })
+  }
+  window.testDenGenerator = () => {
+    game.gopherSquares.forEach((square) => {
+      square.element.classList.remove('debug')
+    })
+    game.gopherDens = []
+    game.makeGopherDens([2,3,3,4,5])
+    window.showDens()
+  }
 }

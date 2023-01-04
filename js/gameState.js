@@ -1,11 +1,16 @@
+import { GopherDen } from "./gamePieces.js"
+
 export class Game {
   constructor() {
     this.playerSquares = []
     this.gopherSquares = []
     this.carrotPlots = []
+    this.gopherDens = []
+    //TODO the fields below relate to handling clicks. that should really be stored and processed by the controller
     this.selectedPlot = null
     this.doubleClickFlag = false
     this.timer = null
+    this.gopher = new GopherAI()
   }
 
   static _createIndexList(row, column, size, vertical) {
@@ -31,6 +36,7 @@ export class Game {
       this
     )
   }
+
   addCarrotPlot(carrotPlot) {
     this.carrotPlots.push(carrotPlot)
   }
@@ -55,6 +61,7 @@ export class Game {
     this.doubleClickFlag = false
     this.selectedPlot = null
   }
+
   movePlot(squareId) {
     const targetSquare = this.playerSquares[squareId.split('_')[1]]
     this.selectedPlot.setLocation(targetSquare.row, targetSquare.column)
@@ -62,24 +69,63 @@ export class Game {
     this.selectedPlot = null
   }
 
-  checkForCollision(row, column, size, vertical, exempt = null) {
+  checkForCollision(row, column, size, vertical, board, exempt = null) {
+    let boardPieces
+    if (board === 'gopher') { boardPieces = this.gopherDens}
+    else if (board === 'player') { boardPieces = this.carrotPlots}
+    else {throw new Error('invalid board specifier')}
+
     const checkLocations = Game._createIndexList(row, column, size, vertical)
-    for (let i = 0; i < this.carrotPlots.length; i++) {
-      const plot = this.carrotPlots[i]
-      if (plot === exempt) {
+    for (let i = 0; i < boardPieces.length; i++) {
+      const piece = boardPieces[i]
+      if (piece === exempt) {
         continue
       }
-      const plotIndexes = Game._createIndexList(
-        plot.row,
-        plot.column,
-        plot.size,
-        plot.isVertical
+      const pieceIndexes = Game._createIndexList(
+        piece.row,
+        piece.column,
+        piece.size,
+        piece.isVertical
       )
-      for (let j = 0; j < plotIndexes.length; j++) {
-        if (checkLocations.includes(plotIndexes[j])) {
+      for (let j = 0; j < pieceIndexes.length; j++) {
+        if (checkLocations.includes(pieceIndexes[j])) {
           return true
         }
       }
     }
   }
+  
+  makeGopherDens(sizes) {
+    for (let i = 0; i < sizes.length; i++) {
+      this.gopherDens.push(new GopherDen(sizes[i], this))
+    }
+  }
+
+  registerPlayerShot(squareId) {
+    const shotIndex = Number(squareId.split('_')[1])
+    for (let i = 0; i < this.gopherDens.length; i++) {
+      const denSquares = Game._createIndexList(
+        this.gopherDens[i].row,
+        this.gopherDens[i].column,
+        this.gopherDens[i].size,
+        this.gopherDens[i].isVertical
+      )
+      for (let j = 0; j < denSquares.length; j++) {
+        if (shotIndex === denSquares[j]) {
+          this.gopherSquares[shotIndex].isHit = true
+          return
+        }
+      }
+    }
+    this.gopherSquares[shotIndex].isMiss = true
+  }
+}
+
+class GopherAI {
+  constructor(){
+    this.activeHits = []
+    this.previousShots = []
+  }
+
+  takeShot(){}
 }

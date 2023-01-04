@@ -99,5 +99,20 @@
     box-sizing: border-box;
 }
 .hidden {
-    display: none;
+    display: none !important;
+}
+.debug {
+    background-color: brown;
+}
+.gopherHit {
+    background-color: red;
+}
+.gopherMiss {
+    background-color: green;
+}
+.playerHit {
+    background-color: red;
+}
+.playerMiss {
+    background-color: blue;
 }
