@@ -14,13 +14,10 @@ let game = {}
 
 const clickPlot = function (event) {
   event.stopPropagation()
-  console.log('click body')
   if (game.doubleClickFlag === this.id){
-    console.log('double click')
     game.rotatePlot(this.id)
   } else if (!game.selectedPlot || game.selectedPlot.index != this.id.split('_')[1]) {
     game.selectPlot(this.id)
-    console.log('start a click timer')
     game.startDoubleClickTimer(this.id)
   } else {
     const clickedPlot = game.carrotPlots[this.id.split('_')[1]]
@@ -28,7 +25,7 @@ const clickPlot = function (event) {
     const offset = event.target.id.split('_')[1]
     game.movePlot(`playerSquare_${plotIndexes[offset]}`)
   }
-  render()
+  setupPhaseRender()
 }
 
 const render = () => {
@@ -101,9 +98,9 @@ const initialize = () => {
       return
     }
     game.movePlot(event.target.id)
-    render()
+    setupPhaseRender()
   })
-  render()
+  setupPhaseRender()
 }
 
 const reset = () => {
@@ -115,24 +112,36 @@ const reset = () => {
 
 initialize()
 
-if (false) {
-  tests.rotateOOBHorizontal(game, render)
+if (true) {
+  const gridClickHandler = (event) => {
+    if (!game.selectedPlot) {
+      return
+    }
+    game.movePlot(event.target.id)
+    setupPhaseRender()
+  }
+  tests.rotateOOBHorizontal(game, setupPhaseRender)
   reset()
-  tests.rotateOOBVertical(game, render)
+  tests.rotateOOBVertical(game, setupPhaseRender)
   reset()
-  tests.placementOOBVertical(game, render)
+  tests.placementOOBVertical(game, setupPhaseRender)
   reset()
-  tests.placementOOBHorizontal(game, render)
+  tests.placementOOBHorizontal(game, setupPhaseRender)
   reset()
-  tests.placementOverlappingVertical(game, render)
+  tests.placementOverlappingVertical(game, setupPhaseRender)
   reset()
-  tests.placementOverlappingHorizontal(game, render)
+  tests.placementOverlappingHorizontal(game, setupPhaseRender)
   reset()
   tests.clickToPlace(game, (event) => {
     if (game.selectedPlot) {
       game.movePlot(event.target.id)
     }
-    render()
-  },render)
-  console.log('reminder: test click to place with object collision')
+    setupPhaseRender()
+  })
+  reset()
+  tests.clickToPlaceCollision(game, gridClickHandler, clickPlot)
+  reset()
+  tests.doubleClickToRotate(game, gridClickHandler, clickPlot)
+  reset()
+  tests.doubleClickToRotateCollision(game, gridClickHandler, clickPlot)
 }

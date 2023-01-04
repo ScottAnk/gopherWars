@@ -19,7 +19,6 @@ export class Game {
 
   startDoubleClickTimer(plotId) {
     if (this.timer) {
-      console.log('clearing timer')
       clearTimeout(this.timer)
     }
     this.doubleClickFlag = plotId
@@ -27,7 +26,6 @@ export class Game {
       function (game) {
         game.doubleClickFlag = false
         game.timer = null
-        console.log('timedout, flag now ' + game.doubleClickFlag)
       },
       400,
       this
