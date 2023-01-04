@@ -113,7 +113,7 @@ const reset = () => {
 
 initialize()
 
-if (false) {
+if (true) {
   const gridClickHandler = (event) => {
     if (!game.selectedPlot) {
       return
@@ -145,4 +145,6 @@ if (false) {
   tests.doubleClickToRotate(game, gridClickHandler, clickPlot)
   reset()
   tests.doubleClickToRotateCollision(game, gridClickHandler, clickPlot)
+  reset()
+  tests.placeAllPlots(game, gridClickHandler, clickPlot)
 }

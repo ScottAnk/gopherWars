@@ -228,3 +228,28 @@ export function doubleClickToRotateCollision(game, gridHandler, plotHandler) {
     } - doubleClickToRotateCollision`
   )
 }
+
+export function placeAllPlots (game, gridHandler, plotHandler) {
+  const plotIndex1 = 0
+  const plotIndex2 = 1
+  const plotIndex3 = 2
+  const plotIndex4 = 3
+  const plotIndex5 = 4
+  const clickPlot1 = plotHandler.bind(game.carrotPlots[plotIndex1].element)
+  const clickPlot2 = plotHandler.bind(game.carrotPlots[plotIndex2].element)
+  const clickPlot3 = plotHandler.bind(game.carrotPlots[plotIndex3].element)
+  const clickPlot4 = plotHandler.bind(game.carrotPlots[plotIndex4].element)
+  const clickPlot5 = plotHandler.bind(game.carrotPlots[plotIndex5].element)
+
+  clickPlot1(clickPlotEvent(plotIndex1))
+  gridHandler(clickGridEvent(10))
+  clickPlot2(clickPlotEvent(plotIndex2))
+  gridHandler(clickGridEvent(11))
+  clickPlot3(clickPlotEvent(plotIndex3))
+  gridHandler(clickGridEvent(12))
+  clickPlot4(clickPlotEvent(plotIndex4))
+  gridHandler(clickGridEvent(13))
+  clickPlot5(clickPlotEvent(plotIndex5))
+  gridHandler(clickGridEvent(14))
+
+}
