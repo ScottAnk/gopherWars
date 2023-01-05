@@ -222,7 +222,10 @@ class GopherAI {
   }
 
   _extrapolatePoints(point1, point2) {
-    const direction = point1 - point2
+    let direction = Math.sign(point1 - point2) 
+    if (this.game.playerSquares[point1].column === this.game.playerSquares[point2].column) {
+      direction *= 10
+    }
     
     let target = point1 + direction
     if (this._testTarget(target, point1)) {
