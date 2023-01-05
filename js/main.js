@@ -58,6 +58,30 @@ const gameplayRender = () => {
   })
 }
 
+const startGame = () => {
+  anchorCarrotLocations()
+  game.makeGopherDens([2,3,3,4,5])
+  view.plotTray.classList.add('hidden')
+  if (debugMode) {window.showDens()}
+  view.gopherGrid.addEventListener('click', (event) => {
+    if (!(event.target.id.split('_')[0] === 'gopherSquare')) { 
+      return
+    }
+    game.registerPlayerShot(event.target.id)
+    gameplayRender()
+  })
+}
+
+const startButtonCheck = () => {
+  const plotsInTray = Array.from(plotTray.querySelectorAll('.carrotPlot'))
+  if (plotsInTray.length === 0 && view.playButton === null) {
+    view.playButton = document.createElement('button')
+    view.playButton.textContent = 'Start Game'
+    view.plotTray.appendChild(view.playButton)
+    view.playButton.addEventListener('click', startGame)
+  } 
+}
+
 const setupPhaseRender = () => {
   let plotsToPlace = Array.from(plotTray.querySelectorAll('.carrotPlot'))
   plotsToPlace.forEach((plotElement) => {
@@ -68,24 +92,8 @@ const setupPhaseRender = () => {
     }
   })
 
-  //TODO BUG this generates a new start button every time it renders
-  plotsToPlace = Array.from(plotTray.querySelectorAll('.carrotPlot'))
-  if (plotsToPlace.length === 0) {
-    view.playButton = document.createElement('button')
-    view.playButton.textContent = 'Start Game'
-    view.plotTray.appendChild(view.playButton)
-    view.plotTray.addEventListener('click', (event) => {
-      anchorCarrotLocations()
-      game.makeGopherDens([2,3,3,4,5])
-      view.plotTray.classList.add('hidden')
-      if (debugMode) {window.showDens()}
-      view.gopherGrid.addEventListener('click', (event) => {
-        //TODO BUG a user click and drag will trigger the click event, but it errors out, which probably costs the user a turn 
-        game.registerPlayerShot(event.target.id)
-        gameplayRender()
-      })
-    })
-  } 
+  startButtonCheck()
+
 
   //update plot locations and styles according to data
   game.carrotPlots.forEach((plot) => {
@@ -155,6 +163,7 @@ const reset = () => {
   view.gopherGrid.textContent = ''
   view.plotTray.textContent = ''
   view.plotTray.classList.remove('hidden')
+  view.playButton = null
   initialize()
 }
 
