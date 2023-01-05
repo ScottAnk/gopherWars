@@ -101,28 +101,60 @@ export class Game {
     }
   }
 
-  registerPlayerShot(squareId) {
-    const shotIndex = Number(squareId.split('_')[1])
-    for (let i = 0; i < this.gopherDens.length; i++) {
-      const denSquareIndexes = Game._createIndexList(
-        this.gopherDens[i].row,
-        this.gopherDens[i].column,
-        this.gopherDens[i].size,
-        this.gopherDens[i].isVertical
+  _registerShotAbstract(shotIndex, board) {
+    if (board != 'player' && board != 'gopher') {throw new Error('invalid board specifier')}
+    const pieces = (board === 'player') ? this.carrotPlots : this.gopherDens
+    const boardSquares = (board === 'player') ? this.playerSquares : this.gopherSquares
+    for (let i = 0; i < pieces.length; i++) {
+      const currentPiece = pieces[i]
+      const pieceIndexes = Game._createIndexList(
+        currentPiece.row,
+        currentPiece.column,
+        currentPiece.size,
+        currentPiece.isVertical
       )
-      for (let j = 0; j < denSquareIndexes.length; j++) {
-        if (shotIndex === denSquareIndexes[j]) {
-          this.gopherSquares[shotIndex].isHit = true
-          let denIsDead = true
-          for (let k = 0; k < denSquareIndexes.length; k++) {
-            if (!this.gopherSquares[denSquareIndexes[k]].isHit) { denIsDead = false}
+      for (let j = 0; j < pieceIndexes.length; j++) {
+        if (shotIndex === pieceIndexes[j]) {
+          boardSquares[shotIndex].isHit = true
+          let pieceIsDead = true
+          for (let k = 0; k < pieceIndexes.length; k++) {
+            if (!boardSquares[pieceIndexes[k]].isHit) { 
+              pieceIsDead = false
+            }
           }
-          this.gopherDens[i].isDead = denIsDead
-          return
+          currentPiece.isDead = pieceIsDead
+          return (currentPiece.isDead) ? pieceIndexes : shotIndex
         }
       }
     }
-    this.gopherSquares[shotIndex].isMiss = true
+    boardSquares[shotIndex].isMiss = true
+    return false
+  }
+
+  registerPlayerShot(squareId) {
+    if (this.turn === 'gopher'){
+      return
+    }
+    const shotIndex = Number(squareId.split('_')[1])
+    this._registerShotAbstract(shotIndex, 'gopher')
+    setTimeout (this.requestGopherShot, 1000)
+    this.turn = 'gopher'
+  }
+
+  requestGopherShot() {
+    if (this.turn === 'player') {
+      return
+    }
+    const shotIndex = this.gopher.takeShot()
+    const shotHit = this._registerShotAbstract(shotIndex, 'player')
+    if (shotHit) {
+      if (typeof shotHit === 'number') {
+        this.gopher.notifyHit(shotHit)
+      } else {
+        this.gopher.notifyDeadPlot(shotHit)
+      }
+    }
+    this.turn === 'player'
   }
 }
 
