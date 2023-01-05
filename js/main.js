@@ -2,13 +2,17 @@ import * as tests from './tests.js'
 import { CarrotPlot, PlayerSquare, GopherSquare } from './gamePieces.js'
 import { Game } from './gameState.js'
 
-const debugMode = true
-const runTests = true
+const debugMode = false
+const runTests = false
 //cache DOM objects
 const view = {
   playerGrid: document.querySelector('#playerGrid'),
   gopherGrid: document.querySelector('#gopherGrid'),
   plotTray: document.querySelector('#plotTray'),
+  gameResult: document.querySelector('#gameResult'),
+  gopherWin: document.querySelector('#gopherWin'),
+  playerWin: document.querySelector('#playerWin'),
+  resetButton: null,
   playButton: null,
 }
 
@@ -50,7 +54,7 @@ const doPlayerTurn = (event) => {
       return
     }
     if (game.registerPlayerShot(event.target.id)) {
-      setTimeout(promptGopherTurn, 1000)
+      setTimeout(promptGopherTurn, debugMode ? 100 : 800)
     }
     gameplayRender()
   }
@@ -74,6 +78,15 @@ const gameplayRender = () => {
       })
     }
   })
+  const endGame = game.checkWinner()
+  if (endGame) {
+    view.gameResult.classList.remove('hidden')
+    if (endGame === 'player') {
+      view.playerWin.classList.remove('hidden')
+    } else {
+      view.gopherWin.classList.remove('hidden')
+    }
+  }
 }
 
 const startGame = () => {
@@ -160,6 +173,12 @@ const initialize = () => {
     gopherSquare.element.classList.add(`row${gopherSquare.row}`)
     view.gopherGrid.appendChild(gopherSquare.element)
   }
+    
+  if (view.resetButton === null) {
+    view.resetButton = document.querySelector('#resetButton')
+    view.resetButton.addEventListener('click',reset)
+  }
+  
   //TODO these carrotplot declarations should really be handled inside the game object
   //  Taking an array like pickGopherPlots will allow flexability for changing boat types
   game.addCarrotPlot(new CarrotPlot(2, game))

@@ -161,6 +161,20 @@ export class Game {
     this.turn = 'player'
     return true 
   }
+
+  checkWinner() {
+    const denStatus = this.gopherDens.map((den) => den.isDead)
+    const playerWin = denStatus.every((status) => status)
+    if (playerWin) {
+      return 'player'
+    }
+    const plotStatus = this.carrotPlots.map((plot) => plot.isDead)
+    const gopherWin = plotStatus.every((status) => status)
+    if (gopherWin) {
+      return 'gopher'
+    }
+    return false
+  }
 }
 
 class GopherAI {
