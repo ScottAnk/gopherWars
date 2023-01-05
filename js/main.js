@@ -31,6 +31,7 @@ const clickPlot = function (event) {
     const plotIndexes = Game._createIndexList(clickedPlot.row, clickedPlot.column, clickedPlot.size, clickedPlot.isVertical)
     const offset = event.target.id.split('_')[1]
     game.movePlot(`playerSquare_${plotIndexes[offset]}`)
+    game.startDoubleClickTimer(this.id)
   }
   setupPhaseRender()
 }
