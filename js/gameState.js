@@ -104,15 +104,20 @@ export class Game {
   registerPlayerShot(squareId) {
     const shotIndex = Number(squareId.split('_')[1])
     for (let i = 0; i < this.gopherDens.length; i++) {
-      const denSquares = Game._createIndexList(
+      const denSquareIndexes = Game._createIndexList(
         this.gopherDens[i].row,
         this.gopherDens[i].column,
         this.gopherDens[i].size,
         this.gopherDens[i].isVertical
       )
-      for (let j = 0; j < denSquares.length; j++) {
-        if (shotIndex === denSquares[j]) {
+      for (let j = 0; j < denSquareIndexes.length; j++) {
+        if (shotIndex === denSquareIndexes[j]) {
           this.gopherSquares[shotIndex].isHit = true
+          let denIsDead = true
+          for (let k = 0; k < denSquareIndexes.length; k++) {
+            if (!this.gopherSquares[denSquareIndexes[k]].isHit) { denIsDead = false}
+          }
+          this.gopherDens[i].isDead = denIsDead
           return
         }
       }

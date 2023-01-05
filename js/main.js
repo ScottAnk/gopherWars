@@ -2,8 +2,8 @@ import * as tests from './tests.js'
 import { CarrotPlot, PlayerSquare, GopherSquare } from './gamePieces.js'
 import { Game } from './gameState.js'
 
-const debugMode = false
-const runTests = false
+const debugMode = true
+const runTests = true
 //cache DOM objects
 const view = {
   playerGrid: document.querySelector('#playerGrid'),
@@ -49,7 +49,11 @@ const gameplayRender = () => {
   })
   game.gopherDens.forEach( (den) => {
     if (den.isDead) {
-
+      const indexesToMark = Game._createIndexList(den.row, den.column, den.size, den.isVertical)
+      indexesToMark.forEach((index) => {
+        game.gopherSquares[index].element.classList.add('deadDen')
+        game.gopherSquares[index].element.classList.remove('playerHit')
+      })
     }
   })
 }
@@ -197,6 +201,7 @@ if (debugMode) {
   window.game = game
   window.reset = reset
   window.setupPhaseRender = setupPhaseRender
+  window.gameplayRender = gameplayRender
   window.showDens = () => {
     game.gopherDens.forEach((den) => {
       const squaresToMark = game.constructor._createIndexList(
