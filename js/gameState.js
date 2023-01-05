@@ -10,7 +10,7 @@ export class Game {
     this.selectedPlot = null
     this.doubleClickFlag = false
     this.timer = null
-    this.gopher = new GopherAI()
+    this.gopher = new GopherAI(this)
   }
 
   static _createIndexList(row, column, size, vertical) {
@@ -127,10 +127,106 @@ export class Game {
 }
 
 class GopherAI {
-  constructor(){
+  constructor(game) {
+    this.game = game
     this.activeHits = []
     this.previousShots = []
   }
 
-  takeShot(){}
+  static _shuffleChoices (choices) {
+    for (let i = choices.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [choices[i], choices[j]] = [choices[j], choices[i]];
+    }
+    return choices
+  }
+
+  _testTarget (targetIndex, originIndex=null) {
+    if (targetIndex < 0 || targetIndex > 99) {return false}
+    else if (this.previousShots.includes(targetIndex)) {return false}
+    else if (originIndex){
+      const targetSquare = this.game.playerSquares[targetIndex]
+      const originSquare = this.game.playerSquares[originIndex]
+      if (targetSquare.row != originSquare.row && targetSquare.column != originSquare.column) {
+        return false
+      }
+    }
+    return true
+  }
+
+  notifyHit(hitIndex) {
+    this.activeHits.push(hitIndex)
+  }
+
+  notifyDeadPlot(plotIndexes) {
+    plotIndexes.forEach((plotSquareIndex) => {
+      const indexInActiveHits = this.activeHits.findIndex((element) => element === plotSquareIndex)
+      if (indexInActiveHits > -1) {
+        this.activeHits.splice(indexInActiveHits, 1)
+      }
+    })
+  }
+
+  _randomTarget() {
+    let target = Math.floor(Math.random() * 100)
+    while (!this._testTarget(target)) {
+      target = Math.floor(Math.random() * 100)
+    }
+    return target
+  }
+
+  _sampleAroundPoint(startingPoint) {
+    const directions = GopherAI._shuffleChoices([1, -1, 10, -10])
+    for (let i = 0; i < directions.length; i ++) {
+      const target = startingPoint + directions[i]
+      const origin = startingPoint
+      if (this._testTarget(target, origin)){
+        return target
+      }
+    }
+    throw new Error(`gopher could not find a valid target using activeHits: ${this.activeHits} and previousShots ${this.previousShots}`)
+  }
+
+  _extrapolatePoints(point1, point2) {
+    const direction = point1 - point2
+    
+    let target = point1 + direction
+    if (this._testTarget(target, point1)) {
+      return target
+    } else {
+      target = point1 - direction
+      while (this.activeHits.includes(target)) {target -= direction}
+      if (this._testTarget(target, point1)){
+        return target
+      }
+      return false
+    }
+  }
+
+  takeShot() {
+    if (this.activeHits.length === 0) {
+      const target = this._randomTarget()
+      this.previousShots.push(target)
+      return target
+    } 
+    else if (this.activeHits.length === 1) {
+      const target = this._sampleAroundPoint(this.activeHits[0])
+      this.previousShots.push(target)
+      return target
+    } else {
+      const hit1 = this.activeHits[this.activeHits.length-1]
+      const hit2 = this.activeHits[this.activeHits.length-2]
+
+      let target = this._extrapolatePoints(hit1, hit2) 
+      if (target) {
+        this.previousShots.push(target)
+        return target
+      } else {
+        target = this._sampleAroundPoint(hit1)
+        this.previousShots.push(target)
+        return target
+      }
+    }
+
+  }
 }
