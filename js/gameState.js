@@ -137,6 +137,9 @@ export class Game {
       return false
     }
     const shotIndex = Number(squareId.split('_')[1])
+    if (this.gopherSquares[shotIndex].isHit || this.gopherSquares[shotIndex].isMiss) {
+      return false
+    }
     this._registerShotAbstract(shotIndex, 'gopher')
     this.turn = 'gopher'
     return true
