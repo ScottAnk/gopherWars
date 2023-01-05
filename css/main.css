@@ -94,7 +94,7 @@
 .horizontal {
     flex-direction: row;
 }
-.carrotSquare {
+.carrotSquare, .healthyCarrot {
     background-color: orange;
     box-sizing: border-box;
 }

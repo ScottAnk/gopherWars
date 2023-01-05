@@ -34,8 +34,26 @@ const clickPlot = function (event) {
 const anchorCarrotLocations = () => {
   game.carrotPlots.forEach((plot) => {
     plot.element.removeEventListener('click', clickPlot)
+    plot.element.classList.add('hidden')
   })
 }
+
+const promptGopherTurn = () => {
+  if (!game.requestGopherShot()) {
+    throw new Error('requested gopher turn out of phase')
+  }
+  gameplayRender()
+}
+
+const doPlayerTurn = (event) => {
+    if (!(event.target.id.split('_')[0] === 'gopherSquare')) { 
+      return
+    }
+    if (game.registerPlayerShot(event.target.id)) {
+      setTimeout(promptGopherTurn, 1000)
+    }
+    gameplayRender()
+  }
 
 const gameplayRender = () => {
   game.playerSquares.forEach( (square) => {
@@ -63,13 +81,19 @@ const startGame = () => {
   game.makeGopherDens([2,3,3,4,5])
   view.plotTray.classList.add('hidden')
   if (debugMode) {window.showDens()}
-  view.gopherGrid.addEventListener('click', (event) => {
-    if (!(event.target.id.split('_')[0] === 'gopherSquare')) { 
-      return
-    }
-    game.registerPlayerShot(event.target.id)
-    gameplayRender()
+  view.gopherGrid.addEventListener('click', doPlayerTurn)
+  game.carrotPlots.forEach((plot) => {
+    const carrotIndexes = Game._createIndexList(
+      plot.row,
+      plot.column,
+      plot.size,
+      plot.isVertical
+    )
+    carrotIndexes.forEach((squareIndex) => {
+      game.playerSquares[squareIndex].element.classList.add('healthyCarrot')
+    })
   })
+  gameplayRender()
 }
 
 const startButtonCheck = () => {

@@ -11,6 +11,7 @@ export class Game {
     this.doubleClickFlag = false
     this.timer = null
     this.gopher = new GopherAI(this)
+    this.turn = ''
   }
 
   static _createIndexList(row, column, size, vertical) {
@@ -133,17 +134,17 @@ export class Game {
 
   registerPlayerShot(squareId) {
     if (this.turn === 'gopher'){
-      return
+      return false
     }
     const shotIndex = Number(squareId.split('_')[1])
     this._registerShotAbstract(shotIndex, 'gopher')
-    setTimeout (this.requestGopherShot, 1000)
     this.turn = 'gopher'
+    return true
   }
 
   requestGopherShot() {
     if (this.turn === 'player') {
-      return
+      return false
     }
     const shotIndex = this.gopher.takeShot()
     const shotHit = this._registerShotAbstract(shotIndex, 'player')
@@ -154,7 +155,8 @@ export class Game {
         this.gopher.notifyDeadPlot(shotHit)
       }
     }
-    this.turn === 'player'
+    this.turn = 'player'
+    return true 
   }
 }
 
