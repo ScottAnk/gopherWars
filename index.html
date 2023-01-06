@@ -4,21 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/boardGridRules.css"/>
     <link rel="stylesheet" href="css/main.css"/>
     <script src="js/main.js" type="module"></script>
     <title>Gopher Wars</title>
 </head>
 <body>
-    <div class="hidden" id="gameResult">
-        <p class="hidden" id="playerWin">Congratulations! You Win!</p>
-        <p class="hidden" id="gopherWin">Oh No! The gophers destroyed your farm. Better luck next time!</p>
-        <button id="resetButton">Play Again!</button>
-    </div>
-    <p>player grid</p>
-    <div id="playerGrid" class="boardGrid"><!-- filled with div's with class "playerSquare"></!--></div>
-    <p>gopher grid</p>
-    <div id="gopherGrid" class="boardGrid"><!-- filled with div's with class "gopherSquare"></!--></div>
-    <div id="plotTray">
+    <div id="mainContainer">
+        <div class="boardZone" id="playerZone">
+            <div class="boardContent" id="playerContent">
+                <p>Carrot Fields</p>
+                <div id="playerGrid" class="boardGrid"><!-- filled with div's with class "playerSquare gridSquare"></!--></div>
+            </div>
+        </div>
+        <div class="boardZone" id="gopherZone">
+            <div class="boardContent" id="gopherContent">
+                <p>Gopher Woods</p>
+                <div id="gopherGrid" class="boardGrid"><!-- filled with div's with class "gopherSquare gridSquare"></!--></div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
