@@ -2,7 +2,7 @@ import * as tests from './tests.js'
 import { CarrotPlot, PlayerSquare, GopherSquare } from './gamePieces.js'
 import { Game } from './gameState.js'
 
-const debugMode = false
+const debugMode = true
 const runTests = false
 //cache DOM objects
 const view = {
@@ -203,6 +203,7 @@ const initialize = () => {
 }
 
 const reset = () => {
+  //TODO BUG reset doesn't clear the result div
   view.playerGrid.textContent = ''
   view.gopherGrid.textContent = ''
   view.plotTray.textContent = ''
