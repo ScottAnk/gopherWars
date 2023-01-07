@@ -104,7 +104,7 @@ const startGame = () => {
       plot.isVertical
     )
     carrotIndexes.forEach((squareIndex) => {
-      game.playerSquares[squareIndex].element.classList.add('healthyCarrot')
+      game.playerSquares[squareIndex].element.classList.add('carrotSquare')
     })
   })
   gameplayRender()
