@@ -2,7 +2,7 @@ import * as tests from './tests.js'
 import { CarrotPlot, PlayerSquare, GopherSquare } from './gamePieces.js'
 import { Game } from './gameState.js'
 
-const debugMode = true
+const debugMode = false
 const runTests = false
 //cache DOM objects
 const view = {
@@ -94,7 +94,6 @@ const startGame = () => {
   anchorCarrotLocations()
   game.makeGopherDens([2,3,3,4,5])
   view.plotTray.classList.add('hidden')
-  if (debugMode) {window.showDens()}
   view.gopherGrid.addEventListener('click', doPlayerTurn)
   game.carrotPlots.forEach((plot) => {
     const carrotIndexes = Game._createIndexList(
@@ -208,6 +207,10 @@ const reset = () => {
   view.gopherGrid.textContent = ''
   view.plotTray.textContent = ''
   view.plotTray.classList.remove('hidden')
+  view.gameResult.classList.add('hidden')
+  view.playerWin.classList.add('hidden')
+  view.gopherWin.classList.add('hidden')
+  view.gopherGrid.removeEventListener('click', doPlayerTurn)
   view.playButton = null
   initialize()
 }
