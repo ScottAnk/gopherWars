@@ -1,201 +1,71 @@
-# Gopher Wars  
+# Gopher Wars
 
-## Introduction  
+## Introduction
 
-Trouble has arrived in our idyllic villiage.  
+Gopher Wars is a re-imagining of the classic board game Battleship, where the player takes the role of an angry farmer seeking to eradicate an infestation of gophers (played by a computer oponent) which threatens the player's carrot farm.  
 
-An invading arm of gophers threatens the carrot farming industry of this community. The villiage council has deputized you as Supreme Carrot Commander and given you full access to the villiage's nuclear arsenal. Position your carrot plots strategically, make the right surgical strikes, and you may just have enough carrots left to survive the nuclear winter. Good luck commander.  
+The game is currently live and hosted through gitHub pages, [click here to check it out](https://scottank.github.io/gopherWars/ "Gopher Wars on gitHub pages")  
 
-## Layout  
+## Getting Started
 
-the MVP UI features two grids which will display where the user and the AI have landed hits, and which of those hits missed or found a target. At tool tray at the bottom of the UI initially holds the carrot plots, which must be placed before the user can start the game. 
+### Gameplay  
 
-When the game ends on of two end game displays will overlay the game screen congratulating or consoling the player, along with a matching image of the titular gopher.  
+To place or move a piece, simply click (or tap) on it to select, and click somewhere on the Carrot Fields grid to place it. Once a piece is on the grid, double click it to rotate.  
 
-![MVP wireframe](readmeImages/GopherWarsMVP.png)  
+When you are happy with the arangement of your pieces, click the start game button to lock them in place. Then click squares on the Gopher Woods grid to fire shots at the gophers, the computer will automatically fire back, displaying hits and misses on the Carrot Fields grid.  
 
-version two encorporates more animations. Notably, the carrot plot tool tray disappears after the game starts. That space in the UI is replaced with a tray of special abilities. This version also introduces a walkthrough animation that highlights the user controls and explains their effects. The win screen and loss screen remain unchanged from the MVP  
+### Rules  
 
-![Version 2 wireframe](readmeImages/GopherWarsV2.png)  
+- All pieces must be placed completely within the 10x10 grid
+- The two sides alternate turns, taking one shot per turn without knowing where their opponent's pieces are
+- After a player chooses a target, the oponent must say if the shot hits a piece or misses
+- Additionally if every space on a given piece has been hit this information must be shared with the opponent
+- The game ends when all the pieces on one player's board have been destroyed
+
+## Technology
+
+- The game view is written in HTML and CSS
+- Game control logic, model, and computer opponent are written in JavaScript
+- Code formatting is enforced with Prettier
+- Artwork was drawn in GIMP
+
+## Interface
+
+At the begining of the game, the player's pieces sit outside the board waiting to be placed.  
+
+Dektop                                                           | Mobile
+:---------------------------------------------------------------:|:--------------------------------------------------------------:
+![initial state on desktop](readmeImages/initialStateDesktop.png)|![initial state on mobile](readmeImages/initialStateMobile.png)
+
+Once pieces are placed and the game starts, all the shots taken by both sides are visible as little fireballs, craters, or red crosses (I would have loved to make a more stimulating miss indicator for the player, but my pixel art skills fell short of the challenge). When every space on a gopher den has been hit, it is highlighted in red. In the image below, the 2-piece and 4-piece dens have been destoyed, while two hits have been landed on a den at the top which still has an unknown number of remaining spaces to hit. 
+
+Dektop                                                  | Mobile
+:------------------------------------------------------:|:-----------------------------------------------------:
+![gameplay on desktop](readmeImages/gameplayDesktop.png)|![gameplay on mobile](readmeImages/gameplayMobile.png)
+
+When one side has destroyed all of their oponent's pieces a semi-transparent overlay tells the user who won, and invites them to play agin. The "play again" button will reset all the pieces so the player can start placing carrot plots again.
 
 
-Version 3 adds in a great deal of player progression. A skill tree is available from the win/loss screens which allows the player to spend points earned in games to unlock abilities in the categories of attacks, defence, and intelligence
+Dektop                                                           | Mobile
+:---------------------------------------------------------------:|:--------------------------------------------------------------:
+![game over screen on desktop](readmeImages/playerWinDesktop.png)|![game over screen on mobile](readmeImages/playerWinMobile.png)
 
-![Version 3 wireframe](readmeImages/GopherWarsV3.png)  
+## Development
 
-# User Stories  
+### Planning
 
-### MVP  
+Development of this game began with planning user stories and wireframing several generations of the game. Those plans were among the first files committed to the repository, and are preserved for posterity in the [planning directory](planning/README.md). The game is currently at the MVP level of development, and many of the version 2 and 3 user stories remain relevant objectives for future development.
 
-- As a user I need to see a play grid for myself and the gophers
-    ```
-    in html:
-    div with id 'playerGrid'
-        100x divs with class 'playerSquare gridSquare'
-        each div also gets attributes data-column and data-row which will assist with placing carrot plots
-        and gopher hit marks
-    div with id 'gopherGrid'
-        100x divs with class 'gopherSquare gridSquare'
-        each div also gets attributes data-column and data-row which will assist with placing player hits
-    
-    in css:
-    id playerGrid gets grid template with 10 columns and rows
-    id gopherGrid gets grid template with 10 columns and rows
-    ```
-- As a user I need to be able to position my carrot plots  
-    ```
-    in html:
-    div with id 'plotTray'
-        divs with class 'carrotPlot vertical' 
-            divs with class 'carrotSquare gridSquare'
-            each carrotPlot can have different numbers of individualCarrot
+### Structure
 
-    in css:
-    id plotTray gets flex display with space between justify
-    class carrotPlot gets flex display with justify flex start 
-    class vertical gets flex direction column
-    class horzontal gets flex direction row (this will be added via javascript when player rotates plot)
-    class indvidualCarrot gets an image of the little carrot tops
-    class selected gets an outline to distingush the selected plot
+Gopher Wars uses a model-view-controller architecture. A central Game object contains all of the data about location of game pieces, shots taken, hits and misses, and the game winner. The Game object also exposes methods to the controller that allow it to communicate user input and request game status information.  
 
-    in javascript:
-    for each carrotPlot
-        add event listener for click:
-            for all carrotPlot divs
-                remove class selected
-            add class selected on this carrotPlot
-            set activeplot variable equal to this carrotPlot
-    add event listener for click to the playerGrid: 
-        if activeplot isn't null:
-            make activePlot a child of playerGrid
-            set activePlot style elements gridColumnStart, gridRowStart according to coordinates of event target
-            set activePlot gridRowEnd to a span equal to number of children of activePlot
-    ```
+The game view is represented in HTML and CSS, which is updated through render functions that pull information from the Game object.  
 
-- As a user I need to be able to rotate my carrot plots
-    ```
-    when carrot plot is added to playerGrid:
-        set event listener for dblclick: 
-            if element is vertical:
-                set element gridcolumnend to element gridrowend
-                set element gridrowend to span 1
-            else:
-                set element gridrowend to element gridcolumnend
-                set element gridcolumnend to span 1
-    ```
-- As a user I need to be able to start the game after the plots are all on the grid
-    ```
-    inside playerGrid click listener:
-        if plotTray has no children:
-            make a button that says "play game"
-            attach a listener to the button:
-                instantiate a game object with the array of carrotPlots (these will be read to understand when the gophers have hit a carrot)
-    ```
-- As a user I need to be able to select a target on the gopher grid  
-    ```
-    add event listener for click to gopherGrid:
-        if click target is a spot where a gopher den exists:
-            set event target class to gopherHit
-        else:
-            set event target class to gopherMiss
-    ```
-- As a user I need to know if my attack hit a gopher den  
-    `covered in previous pseudo code`
-- As a user I need to be able to see all my past targets
-    `covered in previous pseudo code`
-- As a user I need to know if my carrot patches have been hit by gophers  
-    ```
-    when the gopher AI selects a target on player grid:
-        if target is a spot where a player carrot exists:
-            set target class to playerHit
-            call gopher object's notifyHit method
-            if the hit carrotPlot is fully hit:
-                call gopher object's deadPlot method to notify of a dead plot
-        else:
-            set target class to playerMiss
-    ```
-- As a user I need to be able to see all the gopher attack targets  
-    `covered in previous pseudo code`
-- As a user I need a computer opponent  
-    ```
-    in game object:
-        store a gopher variable that points to a new gopher object
+Controller code in main.js attaches listeners to the view which call on Game object methods when the user has selected pieces, picked places to put them, started the game, and picked targets to shoot. Those event triggers end by calling render functions to update the view with the latest game state from the Game object. Due to the modular nature of the code, none of these methods are accessible from the browser console, but enabling the debugMode flag in main.js will create global variables to expose the game object, reset and render functions, and the showDens function which allows the player to see the gopher dens for debugging purposes.   
 
-    in gopher object:
-        constructor method:
-            this.activeHits = []
-            this.previousShots =[]
-        deadPlot method:
-            for vertex in deadPlot:
-                if vertex in this.activeHits:
-                    remove vertex from this.activeHits
-        notifyHit method:
-            push hit coordinate to this.activeHits
-        shoot method:
-            //issues to be resolved here:
-            //using 1 and -1 for directions left and right is problematic when the starting point is at the end or begining of a row respectively
-            //poping off of the activeHits array happens before gopher knows if the next shot hits, 
-            //  which can end in losing track of targets if the next shot misses but the carrot plot isn't finished off
-            //in this scenario the gopher will keep shooting at the same bad target:
-            //where spaces in [] are carrot plots and 1,2,3 represent gopher shots in chronological order
-            // .   .   .   .   .   
-            // .   .   .  [ ]  .   
-            // .   .  [ ] [ ]  .   
-            // .   3  [2] [1]  .   
-            // .   .  [ ]  .   .   
-            // .   .   .   .   .   
-            // .   .   .   .   .   
-            //the solution should be to break the activeHits lenght out into cases:
-            //  length 0: pick a random spot not in previous targets. if time allows, implement some check for spacing to avoid clustering shots.
-            //  length 1: pick a random direction, check if it's out of bounds, line wrapped, or a cold shot, shoot
-            //  length >1: pick most recent hit, get direction from difference to next preveous hit, 
-            //              if that leads out of bounds, change direction and move until out of range of active hits, shoot
-            //              if that direction axis leads OOB/to a previous shot (not in active hits):
-            //                  take most recent active hit and proceed on the cross axis
-            //It may help to write a validTarget method which checks for OOB, cold shot, and line wrap
-            while this.activeHits has any values in it:
-                pop the last active hit
-                const unTestedDirections=[1,-1,10,-10]
-                for unTestedDirection in unTestedDirections:
-                    if last active hit + unTested Direction is a value in this.activeHits:
-                        if last active hit - unTestedDirection is in bounds:
-                            push last active hit - unTestedDirection to this.previousShots
-                            return last active hit - unTestedDirection
-                use durstenfeld shuffle to reorder unTestedDirections
-                while unTestedDirections has any values in it:
-                    pop next direction from unTestedDirections
-                    if last active hit + next direction is out of bounds:
-                        continue
-                    if last active hit + next direction leads to a space stored in this.previousShots:
-                        continue
-                    push last active hit + next direction in this.previousShots
-                    return last active hit + next direction
-                
-            else:
-                random generate a number 0-99
-    ```
-- As a user I need a display that shows when the game is done and the winner
+The gameState module defines the Game class as well as the GopherAI class which controlls the computer player.  
 
-### version1.5
+The gamePieces module defines all the interactive pieces of the game. These include the CarrotPlot and GopherDen classes which define the pieces on the board and contain methods for moving and rotating them. This module also defines PlayerSquare and GopherSquare which the controller uses to initialize the game board.  
 
-- As a user I need the grid borders to be the same width around the edges and between rows/columns
-- 
-
-### Version 2  
-
-- As a user I need an animated tutorial for controls  
-- As a user I need the carrot plot tray to disappear after all the plots have been positioned
-- As a user I need a difficulty slider that breaks the carrots into smaller plots  
-- As a user I need a local PvP game  
-- As a user I need to get a hint after X consecutive misses (X dependent on difficulty)
-- As a user I need bonus powerups for hits and/or collapsing a den (sinking a ship)
-
-### Version 3  
-
-- As a user I need to have a skill tree  
-- As a user I need to be able to save games and return later  
-- As a user I need to be able to save profile progression
-- As a developer I need an interface to adjust profile progression to test different levels
-- As a user I need to be have game scenarios with different size grids
-- As a user I need to win more points for playing harder scenarios, higher difficulty settings, and winning
-
+Finally the tests module defines a set of tests which can be enabled with the runTests flag in the main.js module to automatically test the placement and rotation features when the game loads. These tests print results to the console and provide a convinient way to ensure that future changes don't break core features.  
