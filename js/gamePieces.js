@@ -21,6 +21,7 @@ export class GopherDen {
   setLocation(row, column) {
     let newRow = row
     let newColumn = column
+
     if (this.isVertical) {
       const maxDimension = newRow + this.size - 1
       if (maxDimension > 10) {
@@ -32,6 +33,7 @@ export class GopherDen {
         newColumn -= maxDimension - 10
       }
     }
+
     if (
       !this.game.checkForCollision(
         newRow,
@@ -44,8 +46,10 @@ export class GopherDen {
     ) {
       this.row = newRow
       this.column = newColumn
+
       return true
     }
+
     return false
   }
 }
@@ -75,6 +79,7 @@ export class CarrotPlot {
 
   rotate() {
     this.isVertical = !this.isVertical
+
     if (!this.setLocation(this.row, this.column)) {
       this.isVertical = !this.isVertical
     }
@@ -83,6 +88,7 @@ export class CarrotPlot {
   setLocation(row, column) {
     let newRow = row
     let newColumn = column
+
     if (this.isVertical) {
       const maxDimension = newRow + this.size - 1
       if (maxDimension > 10) {
@@ -94,6 +100,7 @@ export class CarrotPlot {
         newColumn -= maxDimension - 10
       }
     }
+
     if (
       !this.game.checkForCollision(
         newRow,
@@ -106,8 +113,10 @@ export class CarrotPlot {
     ) {
       this.row = newRow
       this.column = newColumn
+
       return true
     }
+    
     return false
   }
 }
