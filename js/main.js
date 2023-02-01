@@ -21,6 +21,7 @@ let game = {}
 
 const clickPlot = function (event) {
   event.stopPropagation()
+
   if (game.doubleClickFlag === this.id){
     game.rotatePlot(this.id)
   } else if (!game.selectedPlot || game.selectedPlot.index != this.id.split('_')[1]) {
@@ -30,9 +31,11 @@ const clickPlot = function (event) {
     const clickedPlot = game.carrotPlots[this.id.split('_')[1]]
     const plotIndexes = Game._createIndexList(clickedPlot.row, clickedPlot.column, clickedPlot.size, clickedPlot.isVertical)
     const offset = event.target.id.split('_')[1]
+
     game.movePlot(`playerSquare_${plotIndexes[offset]}`)
     game.startDoubleClickTimer(this.id)
   }
+
   setupPhaseRender()
 }
 
@@ -47,39 +50,50 @@ const promptGopherTurn = () => {
   if (!game.requestGopherShot()) {
     throw new Error('requested gopher turn out of phase')
   }
+
   gameplayRender()
 }
 
 const doPlayerTurn = (event) => {
+  // with if checks where the condition is not clear off the bat save them into a var that has a meaningful name of what you are checking on so that way it's clear what is going on here
     if (!(event.target.id.split('_')[0] === 'gopherSquare')) { 
       return
     }
+
     if (game.registerPlayerShot(event.target.id)) {
       setTimeout(promptGopherTurn, debugMode ? 100 : 800)
     }
+
     gameplayRender()
   }
 
 const gameplayRender = () => {
   game.playerSquares.forEach( (square) => {
+    // here you are not following the style of all of your other if/else if conditions. Change over to conform to style of file
     if (square.isMiss) { square.element.classList.add('gopherMiss') }
     else if (square.isHit) {square.element.classList.add('gopherHit')}
     //TODO would be a nice effect to style the whole plot differently if all squares have been hit
   })
+
   game.gopherSquares.forEach( (square) => {
+    // here you are not following the style of all of your other if/else if conditions. Change over to conform to style of file
     if (square.isMiss) { square.element.classList.add('playerMiss') }
     else if (square.isHit) {square.element.classList.add('playerHit')}
   })
+
   game.gopherDens.forEach( (den) => {
     if (den.isDead) {
       const indexesToMark = Game._createIndexList(den.row, den.column, den.size, den.isVertical)
+
       indexesToMark.forEach((index) => {
         game.gopherSquares[index].element.classList.add('deadDen')
         game.gopherSquares[index].element.classList.remove('playerHit')
       })
     }
   })
+
   const endGame = game.checkWinner()
+
   if (endGame) {
     view.gameResult.classList.remove('hidden')
     if (endGame === 'player') {
@@ -95,6 +109,7 @@ const startGame = () => {
   game.makeGopherDens([2,3,3,4,5])
   view.plotTray.classList.add('hidden')
   view.gopherGrid.addEventListener('click', doPlayerTurn)
+
   game.carrotPlots.forEach((plot) => {
     const carrotIndexes = Game._createIndexList(
       plot.row,
@@ -102,15 +117,18 @@ const startGame = () => {
       plot.size,
       plot.isVertical
     )
+
     carrotIndexes.forEach((squareIndex) => {
       game.playerSquares[squareIndex].element.classList.add('carrotSquare')
     })
   })
+
   gameplayRender()
 }
 
 const startButtonCheck = () => {
   const plotsInTray = Array.from(plotTray.querySelectorAll('.carrotPlot'))
+
   if (plotsInTray.length === 0 && view.playButton === null) {
     view.playButton = document.createElement('button')
     view.playButton.textContent = 'Start Game'
@@ -121,8 +139,10 @@ const startButtonCheck = () => {
 
 const setupPhaseRender = () => {
   let plotsToPlace = Array.from(plotTray.querySelectorAll('.carrotPlot'))
+
   plotsToPlace.forEach((plotElement) => {
     const plot = game.carrotPlots[plotElement.id.split('_')[1]]
+
     if (plot.row && plot.column) {
       plotTray.removeChild(plot.element)
       view.playerGrid.appendChild(plot.element)
@@ -135,11 +155,13 @@ const setupPhaseRender = () => {
   //update plot locations and styles according to data
   game.carrotPlots.forEach((plot) => {
     plot.element.classList.remove('selected')
+
     if (!plot.row) {
       return
     }
     plot.element.style.gridRowStart = plot.row
     plot.element.style.gridColumnStart = plot.column
+
     if (plot.isVertical) {
       plot.element.classList.add('vertical')
       plot.element.classList.remove('horizontal')
@@ -160,6 +182,7 @@ const setupPhaseRender = () => {
 
 const initialize = () => {
   game = new Game()
+
   for (let i = 0; i < 100; i++) {
     const playerSquare = new PlayerSquare(i)
     game.addPlayerSquare(playerSquare)
@@ -186,6 +209,7 @@ const initialize = () => {
   game.addCarrotPlot(new CarrotPlot(3, game))
   game.addCarrotPlot(new CarrotPlot(4, game))
   game.addCarrotPlot(new CarrotPlot(5, game))
+
   for (const plot of game.carrotPlots) {
     view.plotTray.appendChild(plot.element)
     plot.element.addEventListener('click', clickPlot)
@@ -195,9 +219,11 @@ const initialize = () => {
     if (!game.selectedPlot) {
       return
     }
+
     game.movePlot(event.target.id)
     setupPhaseRender()
   })
+
   setupPhaseRender()
 }
 
@@ -212,6 +238,7 @@ const reset = () => {
   view.gopherWin.classList.add('hidden')
   view.gopherGrid.removeEventListener('click', doPlayerTurn)
   view.playButton = null
+
   initialize()
 }
 
@@ -223,9 +250,11 @@ if (runTests) {
     if (!game.selectedPlot) {
       return
     }
+
     game.movePlot(event.target.id)
     setupPhaseRender()
   }
+
   tests.rotateOOBHorizontal(game, setupPhaseRender)
   reset()
   tests.rotateOOBVertical(game, setupPhaseRender)
@@ -244,6 +273,7 @@ if (runTests) {
     }
     setupPhaseRender()
   })
+
   reset()
   tests.clickToPlaceCollision(game, gridClickHandler, clickPlot)
   reset()
@@ -259,6 +289,7 @@ if (debugMode) {
   window.reset = reset
   window.setupPhaseRender = setupPhaseRender
   window.gameplayRender = gameplayRender
+
   window.showDens = () => {
     game.gopherDens.forEach((den) => {
       const squaresToMark = game.constructor._createIndexList(
@@ -276,6 +307,7 @@ if (debugMode) {
     game.gopherSquares.forEach((square) => {
       square.element.classList.remove('debug')
     })
+    
     game.gopherDens = []
     game.makeGopherDens([2,3,3,4,5])
     window.showDens()

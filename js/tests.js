@@ -20,6 +20,7 @@ export function placementOOBVertical(game, render) {
         : '!!!fail with ' + game.carrotPlots[4].row
     } - placementOOBVertical`
   )
+
   render()
 }
 
@@ -30,6 +31,7 @@ export function placementOOBHorizontal(game, render) {
   game.carrotPlots[4].rotate()
   game.selectPlot('carrotPlot_4')
   game.movePlot('playerSquare_19')
+
   console.log(
     `${
       game.carrotPlots[4].column === 6 && game.carrotPlots[4].row === 2
@@ -40,6 +42,7 @@ export function placementOOBHorizontal(game, render) {
           game.carrotPlots[4].column
     } - placementOOBVertical`
   )
+
   render()
 }
 
@@ -48,6 +51,7 @@ export function rotateOOBHorizontal(game, render) {
   game.selectPlot('carrotPlot_4')
   game.movePlot('playerSquare_59')
   game.carrotPlots[4].rotate()
+
   console.log(
     `${
       game.carrotPlots[4].column === 6
@@ -55,6 +59,7 @@ export function rotateOOBHorizontal(game, render) {
         : '!!!fail with ' + game.carrotPlots[4].column
     } - rotateOOBHorizontal`
   )
+
   render()
 }
 
@@ -66,6 +71,7 @@ export function rotateOOBVertical(game, render) {
   game.selectPlot('carrotPlot_4')
   game.movePlot('playerSquare_90')
   game.carrotPlots[4].rotate()
+
   console.log(
     `${
       game.carrotPlots[4].column === 1 && game.carrotPlots[4].row === 6
@@ -76,6 +82,7 @@ export function rotateOOBVertical(game, render) {
           game.carrotPlots[4].row
     } - rotateOOBVertical`
   )
+
   render()
 }
 
@@ -86,6 +93,7 @@ export function placementOverlappingVertical(game, render) {
   game.carrotPlots[4].rotate()
   game.selectPlot('carrotPlot_0')
   game.movePlot('playerSquare_20')
+
   console.log(
     `${
       Number.isNaN(game.carrotPlots[0].column) &&
@@ -98,6 +106,7 @@ export function placementOverlappingVertical(game, render) {
           game.carrotPlots[0].row
     } - placementOverlappingVertical`
   )
+
   render()
 }
 
@@ -112,6 +121,7 @@ export function placementOverlappingHorizontal(game, render) {
   game.carrotPlots[0].rotate()
   game.selectPlot('carrotPlot_0')
   game.movePlot('playerSquare_34')
+
   console.log(
     `${
       game.carrotPlots[0].column === 1 && game.carrotPlots[0].row === 5
@@ -123,12 +133,14 @@ export function placementOverlappingHorizontal(game, render) {
           game.carrotPlots[0].row
     } - placementOverlappingHorizontal`
   )
+
   render()
 }
 
 export function clickToPlace(game, handler) {
   game.selectPlot('carrotPlot_4')
   handler(clickGridEvent(34))
+
   console.log(
     `${
       game.carrotPlots[4].column === 5 && game.carrotPlots[4].row === 4
@@ -159,6 +171,7 @@ export function clickToPlaceCollision(game, gridHandler, plotHandler) {
   gridHandler(clickGridEvent(20))
   const finalResultRow = game.carrotPlots[plotIndex2].row
   const finalResultColumn = game.carrotPlots[plotIndex2].column
+
   console.log(
     `${
       Number.isNaN(halfwayResult) &&
@@ -251,5 +264,4 @@ export function placeAllPlots (game, gridHandler, plotHandler) {
   gridHandler(clickGridEvent(13))
   clickPlot5(clickPlotEvent(plotIndex5))
   gridHandler(clickGridEvent(14))
-
 }

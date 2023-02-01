@@ -1,3 +1,4 @@
+// change over to single quotes here since rest of the file is using single quotes
 import { GopherDen } from "./gamePieces.js"
 
 export class Game {
@@ -17,9 +18,11 @@ export class Game {
   static _createIndexList(row, column, size, vertical) {
     const indexes = []
     const increment = vertical ? 10 : 1
+
     for (let i = 0; i < size; i++) {
       indexes[i] = (row - 1) * 10 + (column - 1) + increment * i
     }
+
     return indexes
   }
 
@@ -27,7 +30,9 @@ export class Game {
     if (this.timer) {
       clearTimeout(this.timer)
     }
+
     this.doubleClickFlag = plotId
+
     this.timer = setTimeout(
       function (game) {
         game.doubleClickFlag = false
@@ -56,9 +61,11 @@ export class Game {
 
   rotatePlot(plotId) {
     const targetPlot = this.carrotPlots[plotId.split('_')[1]]
+
     if (targetPlot.row) {
       targetPlot.rotate()
     }
+
     this.doubleClickFlag = false
     this.selectedPlot = null
   }
@@ -72,22 +79,27 @@ export class Game {
 
   checkForCollision(row, column, size, vertical, board, exempt = null) {
     let boardPieces
+
     if (board === 'gopher') { boardPieces = this.gopherDens}
     else if (board === 'player') { boardPieces = this.carrotPlots}
     else {throw new Error('invalid board specifier')}
 
     const checkLocations = Game._createIndexList(row, column, size, vertical)
+
     for (let i = 0; i < boardPieces.length; i++) {
       const piece = boardPieces[i]
+
       if (piece === exempt) {
         continue
       }
+
       const pieceIndexes = Game._createIndexList(
         piece.row,
         piece.column,
         piece.size,
         piece.isVertical
       )
+
       for (let j = 0; j < pieceIndexes.length; j++) {
         if (checkLocations.includes(pieceIndexes[j])) {
           return true
@@ -104,31 +116,39 @@ export class Game {
 
   _registerShotAbstract(shotIndex, board) {
     if (board != 'player' && board != 'gopher') {throw new Error('invalid board specifier')}
+
     const pieces = (board === 'player') ? this.carrotPlots : this.gopherDens
     const boardSquares = (board === 'player') ? this.playerSquares : this.gopherSquares
+
     for (let i = 0; i < pieces.length; i++) {
       const currentPiece = pieces[i]
+
       const pieceIndexes = Game._createIndexList(
         currentPiece.row,
         currentPiece.column,
         currentPiece.size,
         currentPiece.isVertical
       )
-      for (let j = 0; j < pieceIndexes.length; j++) {
+
+      for (let j = 0; j < pieceIndexes.length; j++) { 
         if (shotIndex === pieceIndexes[j]) {
           boardSquares[shotIndex].isHit = true
           let pieceIsDead = true
+
           for (let k = 0; k < pieceIndexes.length; k++) {
             if (!boardSquares[pieceIndexes[k]].isHit) { 
               pieceIsDead = false
             }
           }
+
           currentPiece.isDead = pieceIsDead
           return (currentPiece.isDead) ? pieceIndexes : shotIndex
         }
       }
     }
+
     boardSquares[shotIndex].isMiss = true
+
     return false
   }
 
@@ -136,12 +156,16 @@ export class Game {
     if (this.turn === 'gopher'){
       return false
     }
+
     const shotIndex = Number(squareId.split('_')[1])
+
     if (this.gopherSquares[shotIndex].isHit || this.gopherSquares[shotIndex].isMiss) {
       return false
     }
+
     this._registerShotAbstract(shotIndex, 'gopher')
     this.turn = 'gopher'
+
     return true
   }
 
@@ -149,8 +173,10 @@ export class Game {
     if (this.turn === 'player') {
       return false
     }
+
     const shotIndex = this.gopher.takeShot()
     const shotHit = this._registerShotAbstract(shotIndex, 'player')
+
     if (shotHit) {
       if (typeof shotHit === 'number') {
         this.gopher.notifyHit(shotHit)
@@ -158,21 +184,27 @@ export class Game {
         this.gopher.notifyDeadPlot(shotHit)
       }
     }
+
     this.turn = 'player'
+
     return true 
   }
 
   checkWinner() {
     const denStatus = this.gopherDens.map((den) => den.isDead)
     const playerWin = denStatus.every((status) => status)
+
     if (playerWin) {
       return 'player'
     }
+
     const plotStatus = this.carrotPlots.map((plot) => plot.isDead)
     const gopherWin = plotStatus.every((status) => status)
+
     if (gopherWin) {
       return 'gopher'
     }
+
     return false
   }
 }
@@ -189,10 +221,12 @@ class GopherAI {
         let j = Math.floor(Math.random() * (i + 1));
         [choices[i], choices[j]] = [choices[j], choices[i]];
     }
+
     return choices
   }
 
   _testTarget (targetIndex, originIndex=null) {
+    // here you are not following the style of all of your other if/else if conditions. Change over to conform to style of file
     if (targetIndex < 0 || targetIndex > 99) {return false}
     else if (this.previousShots.includes(targetIndex)) {return false}
     else if (originIndex){
@@ -202,6 +236,7 @@ class GopherAI {
         return false
       }
     }
+
     return true
   }
 
@@ -211,7 +246,9 @@ class GopherAI {
 
   notifyDeadPlot(plotIndexes) {
     plotIndexes.forEach((plotSquareIndex) => {
+
       const indexInActiveHits = this.activeHits.findIndex((element) => element === plotSquareIndex)
+
       if (indexInActiveHits > -1) {
         this.activeHits.splice(indexInActiveHits, 1)
       }
@@ -220,31 +257,38 @@ class GopherAI {
 
   _randomTarget() {
     let target = Math.floor(Math.random() * 100)
+
     while (!this._testTarget(target)) {
       target = Math.floor(Math.random() * 100)
     }
+
     return target
   }
 
   _sampleAroundPoint(startingPoint) {
     const directions = GopherAI._shuffleChoices([1, -1, 10, -10])
+
     for (let i = 0; i < directions.length; i ++) {
       const target = startingPoint + directions[i]
       const origin = startingPoint
+
       if (this._testTarget(target, origin)){
         return target
       }
     }
+
     throw new Error(`gopher could not find a valid target using activeHits: ${this.activeHits} and previousShots ${this.previousShots}`)
   }
 
   _extrapolatePoints(point1, point2) {
     let direction = Math.sign(point1 - point2) 
+
     if (this.game.playerSquares[point1].column === this.game.playerSquares[point2].column) {
       direction *= 10
     }
     
     let target = point1 + direction
+
     if (this._testTarget(target, point1)) {
       return target
     } else {
