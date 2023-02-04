@@ -96,7 +96,7 @@ body{
     display: none !important;
 }
 .debug {
-    background-color: brown;
+    background-image: none;
 }
 .gopherHit {
     background-image: url('../assets/gopherHit.png') !important;
